@@ -1,0 +1,137 @@
+from math import log, floor, ceil
+import argparse
+
+
+def credit_parser():
+    correct_type = ["diff", "annuity"]
+    parser = argparse.ArgumentParser(description="My Parser")
+
+    parser.add_argument("-type", "--type", help="The type of payment")
+    parser.add_argument("-principal", "--principal", help="The credit principal", type=int)
+    parser.add_argument("-periods", "--periods", help="Number of payments", type=int)
+    parser.add_argument("-interest", "--interest", help="Nominal interest rate", type=float)
+    parser.add_argument("-payment", "--payment", help="Monthly Payment", type=int)
+
+    args = parser.parse_args()
+    args_list = vars(args)
+    negative_list = args_list.copy()
+    del negative_list["type"]
+    value_checker = 0
+    negative_checker = 0
+    incorrect_checker = 0
+    for i in args_list:
+        if args_list[i] == None:
+            value_checker += 1
+    for i in negative_list:
+        if negative_list[i] != None and negative_list[i] < 0:
+            negative_checker += 1
+    if args.type not in correct_type:
+        incorrect_checker += 1
+    elif args.type == "diff" and args.payment != None:
+        incorrect_checker += 1
+    elif args.interest == None:
+        incorrect_checker += 1
+    elif value_checker > 1:
+        incorrect_checker += 1
+    elif args.type == "diff" and args.payment != None:
+        incorrect_checker += 1
+    elif negative_checker > 0:
+        incorrect_checker += 1
+    else:
+        return incorrect_checker, args_list
+    return incorrect_checker, args_list
+
+
+def diff_calc():
+    inc_checker, list_1 = credit_parser()
+    month_checker = 1
+    interest = list_1["interest"]
+    prin = list_1["principal"]
+    periods = list_1["periods"]
+    total_pay = 0
+    if interest > 0:
+        interest = interest / (12 * 100)
+    while month_checker <= periods:
+        diff_payment = ceil(prin / periods + interest * (prin - (prin * (month_checker - 1) / periods)))
+        total_pay += diff_payment
+        print("Month {}: paid out {}".format(month_checker, diff_payment))
+        if month_checker == periods:
+            if total_pay > prin:
+                print("")
+                print("Overpayment = {}".format(total_pay - prin))
+        month_checker += 1
+
+
+def prin_calc():
+    inc_checker, list_1 = credit_parser()
+    interest = list_1["interest"]
+    if interest > 0:
+        interest = interest / (12 * 100)
+    periods = list_1["periods"]
+    payment = list_1["payment"]
+    prin = floor(payment / ((interest * pow(1 + interest, periods)) / (pow(1 + interest, periods) - 1)))
+    overpay = payment * periods - prin
+    print("Your credit principal = {}!".format(prin))
+    print("Overpayment = {}".format(overpay))
+
+
+def periods_calc():
+    inc_checker, list_1 = credit_parser()
+    interest = list_1["interest"]
+    if interest > 0:
+        interest = interest / (12 * 100)
+    prin = list_1["principal"]
+    payment = list_1["payment"]
+    periods = ceil(log(payment / (payment - interest * prin), 1 + interest))
+    years = int(periods / 12)
+    if years > 0:
+        if years != 1 and periods % 12 == 1:
+            print("You need {} years and 1 month to repay this credit!".format(years))
+        elif years == 1 and periods % 12 == 1:
+            print("You need 1 year and 1 month to repay this credit!")
+        elif years == 1 and periods % 12 > 1:
+            print("You need 1 year and {} months to repay this credit!".format(periods % 12))
+        elif years != 1 and periods % 12 > 1:
+            print("You need {} years and {} months to repay this credit!".format(years, periods % 12))
+        elif years == 1 and periods % 12 == 0:
+            print("You need 1 year to repay this credit!")
+        elif years != 1 and periods % 12 == 0:
+            print("You need {} years to repay this credit!".format(years))
+    else:
+        if periods == 1:
+            print("You need 1 month to repay this credit!")
+        else:
+            print("You need {} months to repay this credit!".format(periods))
+    if payment * periods > prin:
+        print("Overpayment = {}".format(payment * periods - prin))
+
+
+def annuity_calc():
+    inc_checker, list_1 = credit_parser()
+    interest = list_1["interest"]
+    if interest > 0:
+        interest = interest / (12 * 100)
+    prin = list_1["principal"]
+    periods = list_1["periods"]
+    payment = ceil(prin * ((interest * pow((1 + interest), periods)) / ((pow((1 + interest), periods)) - 1)))
+    print("Your annuity payment = {}!".format(payment))
+    if payment * periods > prin:
+        print("Overpayment = {}".format(payment * periods - prin))
+
+while True:
+    inc_checker, list_1 = credit_parser()
+    if inc_checker > 0:
+        print("Incorrect parameters.")
+        break
+    if list_1["type"] == "diff":
+        diff_calc()
+        break
+    elif list_1["principal"] == None:
+        prin_calc()
+        break
+    elif list_1["periods"] == None:
+        periods_calc()
+        break
+    elif list_1["payment"] == None:
+        annuity_calc()
+        break
