@@ -1,0 +1,79 @@
+from string import digits
+
+
+inp = "_________"
+loc = list(inp)
+key_list = ["1 3", "2 3", "3 3", "1 2", "2 2", "3 2", "1 1", "2 1", "3 1"]
+loc_dict = dict(zip(key_list, loc))
+player = "X"
+
+
+def boardstate_checker():
+    board_state = [[loc_dict['1 3'], loc_dict['2 3'], loc_dict['3 3']],
+                   [loc_dict['1 2'], loc_dict['2 2'], loc_dict['3 2']],
+                   [loc_dict['1 1'], loc_dict['2 1'], loc_dict['3 1']],
+                   [loc_dict['1 3'], loc_dict['1 2'], loc_dict['1 1']],
+                   [loc_dict['2 3'], loc_dict['2 2'], loc_dict['2 1']],
+                   [loc_dict['3 3'], loc_dict['3 2'], loc_dict['3 1']],
+                   [loc_dict['1 3'], loc_dict['2 2'], loc_dict['3 1']],
+                   [loc_dict['3 3'], loc_dict['2 2'], loc_dict['1 1']]]
+    x_amount = sum(y.count("X") for y in board_state[0:3])
+    o_amount = sum(y.count("O") for y in board_state[0:3])
+    x_win = [1 for sublist in board_state if "O" not in sublist and "_" not in sublist]
+    o_win = [1 for sublist in board_state if "X" not in sublist and "_" not in sublist]
+    draw_checker = [1 for sublist in board_state if "_" not in sublist]
+    if 1 in x_win and 1 in o_win:
+        return 0, "Impossible"
+    elif abs(x_amount - o_amount) >= 2:
+        return 0, "Impossible"
+    elif 1 in x_win:
+        return 1, "X wins"
+    elif 1 in o_win:
+        return 1, "O wins"
+    elif sum(draw_checker) == 8:
+        return 1, "Draw"
+    else:
+        return 0, "Game not Finished"
+
+
+def board():
+    return f"""
+---------
+| {loc_dict['1 3']} {loc_dict['2 3']} {loc_dict['3 3']} |
+| {loc_dict['1 2']} {loc_dict['2 2']} {loc_dict['3 2']} |
+| {loc_dict['1 1']} {loc_dict['2 1']} {loc_dict['3 1']} |
+---------"""
+
+
+while True:
+    print(board())
+    a, b = boardstate_checker()
+    if a > 0:
+        print(b)
+        break
+    if player == "X":
+        while True:
+            player_move = input("Enter the coordinates: ")
+            if sum([1 for i in player_move.split() if i not in digits]) >= 1:
+                print("You should enter numbers!")
+            elif player_move not in key_list:
+                print("Coordinates should be from 1 to 3!")
+            elif loc_dict[player_move] is not "_":
+                print("This cell is occupied! Choose another one!")
+            else:
+                loc_dict[player_move] = "X"
+                player = "O"
+                break
+    else:
+        while True:
+            player_move = input("Enter the coordinates: ")
+            if sum([1 for i in player_move.split() if i not in digits]) >= 1:
+                print("You should enter numbers!")
+            elif player_move not in key_list:
+                print("Coordinates should be from 1 to 3!")
+            elif loc_dict[player_move] is not "_":
+                print("This cell is occupied! Choose another one!")
+            else:
+                loc_dict[player_move] = "O"
+                player = "X"
+                break
