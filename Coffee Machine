@@ -1,0 +1,205 @@
+class Coffee:
+    def __init__(self, water, milk, beans, p_cups):
+        self.water = water
+        self.milk = milk
+        self.beans = beans
+        self.p_cups = p_cups
+
+
+class CoffeeMaker:
+    drink_amount = 0
+    water = 0
+    milk = 0
+    beans = 0
+    p_cups = 0
+    money = 0
+    espresso = Coffee(250, 0, 16, 1)
+    latte = Coffee(350, 75, 20, 1)
+    cappuccino = Coffee(200, 100, 12, 1)
+    state = "m"
+
+    @staticmethod
+    def stage_4_test():
+        water = 400
+        milk = 540
+        beans = 120
+        p_cups = 9
+        money = 550
+        return water, milk, beans, p_cups, money
+
+    @staticmethod
+    def supplies():
+        water = int(input("Write how many ml of water the coffee machine has: "))
+        milk = int(input("Write how many ml of milk the coffee machine has: "))
+        beans = int(input("Write how many grams of coffee beans the coffee machine has: "))
+        p_cups = int(input("Write how many disposable cups the coffee machine has: "))
+        money = int(input("Write how much money the coffee machine has: "))
+        return water, milk, beans, p_cups, money
+
+    @staticmethod
+    def make_coffee():
+        print("""Starting to make a coffee
+    Grinding coffee beans
+    Boiling water
+    Mixing boiled water with crushed coffee beans
+    Pouring coffee into the cup
+    Pouring some milk into the cup
+    Coffee is ready!""")
+
+    @staticmethod
+    def drink_input():
+        drink_amount = int(input("Write how many cups of coffee you will need: "))
+        return drink_amount
+
+    def ingredients_need(self):
+        print(f"""For {self.drink_amount} cups of coffee you will need:
+{200 * self.drink_amount} ml of water
+{50 * self.drink_amount} ml of milk
+{15 * self.drink_amount} g of coffee beans""")
+
+    def coffee_count(self):
+        water_req = self.water // 200
+        milk_req = self.milk // 50
+        beans_req = self.beans // 15
+        cups = [water_req, milk_req, beans_req]
+        if min(cups) >= self.drink_amount:
+            if min(cups) - self.drink_amount >= 1:
+                return print("Yes, I can make that amount of coffee "
+                             f"(and even {min(cups) - self.drink_amount} more than that)")
+            else:
+                return print("Yes, I can make that amount of coffee")
+        elif min(cups) < self.drink_amount:
+            return print(f"No, I can make only make {min(cups)} cups of coffee")
+
+    def status(self):
+        print(f"""
+The coffee machine has:
+{self.water} of water
+{self.milk} of milk
+{self.beans} of beans
+{self.p_cups} of disposable cups
+{self.money} of money""")
+
+    def take(self):
+        print(f"I gave you ${self.money}")
+        self.money = 0
+
+    def menu(self, choice):
+        if self.state == "m":
+            if choice == "buy":
+                self.state = "b"
+            elif choice == "fill":
+                self.state = "f"
+            elif choice == "take":
+                g1.take()
+            elif choice == "remaining":
+                g1.status()
+            elif choice == "exit":
+                self.state = "exit"
+            else:
+                print("Error: Not valid choice")
+        elif self.state == "b2":
+            if choice == "1":
+                if self.water < 250:
+                    print("Sorry, not enough water!")
+                    self.state = "m"
+                elif self.beans < 16:
+                    print("Sorry, not enough coffee beans!")
+                    self.state = "m"
+                elif self.p_cups < 1:
+                    print("Sorry, not enough disposable cups!")
+                    self.state = "m"
+                else:
+                    print("I have enough resources, making you a coffee!")
+                    self.water -= 250
+                    self.beans -= 16
+                    self.p_cups -= 1
+                    self.money += 4
+                    self.state = "m"
+            elif choice == "2":
+                if self.water < 350:
+                    print("Sorry, not enough water!")
+                    self.state = "m"
+                elif self.milk < 75:
+                    print("Sorry, not enough milk!")
+                    self.state = "m"
+                elif self.beans < 20:
+                    print("Sorry, not enough coffee beans!")
+                    self.state = "m"
+                elif self.p_cups < 1:
+                    print("Sorry, not enough disposable cups!")
+                    self.state = "m"
+                else:
+                    print("I have enough resources, making you a coffee!")
+                    self.water -= 350
+                    self.milk -= 75
+                    self.beans -= 20
+                    self.p_cups -= 1
+                    self.money += 7
+                    self.state = "m"
+            elif choice == "3":
+                if self.water < 200:
+                    print("Sorry, not enough water!")
+                    self.state = "m"
+                elif self.milk < 100:
+                    print("Sorry, not enough milk!")
+                    self.state = "m"
+                elif self.beans < 12:
+                    print("Sorry, not enough coffee beans!")
+                    self.state = "m"
+                elif self.p_cups < 1:
+                    print("Sorry, not enough disposable cups!")
+                    self.state = "m"
+                else:
+                    print("I have enough resources, making you a coffee!")
+                    self.water -= 200
+                    self.milk -= 100
+                    self.beans -= 12
+                    self.p_cups -= 1
+                    self.money += 6
+                    self.state = "m"
+            elif choice == "back":
+                self.state = "m"
+            else:
+                print("Error: Not a valid choice. Returning to menu")
+                self.state = "m"
+        elif self.state == "f1":
+            self.water += int(choice)
+            self.state = "f2"
+        elif self.state == "f3":
+            self.milk += int(choice)
+            self.state = "f4"
+        elif self.state == "f5":
+            self.beans += int(choice)
+            self.state = "f6"
+        elif self.state == "f7":
+            self.p_cups += int(choice)
+            self.state = "m"
+
+
+g1 = CoffeeMaker()
+g1.water, g1.milk, g1.beans, g1.p_cups, g1.money = g1.stage_4_test()
+while True:
+    if g1.state == "exit":
+        break
+    elif g1.state == "m":
+        print("")
+        print("Write action (buy, fill, take, remaining, exit):")
+    elif g1.state == "b":
+        print("")
+        print("What do you want to buy? 1- espresso, 2- latte, 3- cappuccino, back - to main menu: ")
+        g1.state = "b2"
+    elif g1.state == "f":
+        print("")
+        print("Write how many ml of water do you want to add: ")
+        g1.state = "f1"
+    elif g1.state == "f2":
+        print("Write how many ml of milk do you want to add: ")
+        g1.state = "f3"
+    elif g1.state == "f4":
+        print("Write how many grams of coffee beans do you want to add: ")
+        g1.state = "f5"
+    elif g1.state == "f6":
+        print("Write how many disposable cups do you want to add: ")
+        g1.state = "f7"
+    g1.menu(input())
